@@ -98,14 +98,125 @@
   <!-- ALIMENTAÇÃO -->
   <div id="alimentacao" class="tela">
     <h2>🥗 Alimentação</h2>
-    <div class="card" style="text-align:center;">
-      <div style="font-size:60px; margin:20px 0;">🚧</div>
-      <h3>Em processo de criação</h3>
-      <p>Estamos preparando uma nova forma de registrar e acompanhar sua alimentação.</p>
-      <p>Em breve você poderá até <strong>fotografar seu prato</strong> 📸 e receber uma estimativa dos alimentos e calorias.</p>
-      <p style="font-size:14px; color:#68756e;">Esta função estará disponível em breve.</p>
+    <div class="menu">
+      <button class="menu-card" onclick="mostrarTela('alimentacaoSugestao')"><span>💡</span><strong>Receber sugestão</strong></button>
+      <button class="menu-card" onclick="mostrarTela('alimentacaoTipoRegistro')"><span>🍽️</span><strong>Registrar refeição</strong></button>
+      <button class="menu-card" onclick="abrirRegistroExtra()"><span>🍫</span><strong>Registrar extra</strong></button>
+      <button class="menu-card" onclick="abrirCaloriasDoDia()"><span>🔥</span><strong>Calorias do dia</strong></button>
     </div>
     <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- SUGESTÃO DE ALIMENTAÇÃO -->
+  <div id="alimentacaoSugestao" class="tela">
+    <h2>💡 Receber sugestão</h2>
+    <div class="menu">
+      <button class="menu-card" onclick="abrirSugestaoAlimentacao('cafeManha')"><span>☕</span><strong>Café da manhã</strong></button>
+      <button class="menu-card" onclick="abrirSugestaoAlimentacao('almoco')"><span>🍛</span><strong>Almoço</strong></button>
+      <button class="menu-card" onclick="abrirSugestaoAlimentacao('cafeTarde')"><span>☕</span><strong>Café da tarde</strong></button>
+      <button class="menu-card" onclick="abrirSugestaoAlimentacao('jantar')"><span>🍽️</span><strong>Jantar</strong></button>
+      <button class="menu-card" onclick="abrirSugestaoAlimentacao('ceia')"><span>🌙</span><strong>Ceia</strong></button>
+    </div>
+    <button class="saude" onclick="mostrarTela('alimentacao')">← Voltar para Alimentação</button>
+  </div>
+
+  <!-- TIPO DE REFEIÇÃO PARA REGISTRO -->
+  <div id="alimentacaoTipoRegistro" class="tela">
+    <h2>🍽️ Registrar refeição</h2>
+    <div class="menu">
+      <button class="menu-card" onclick="abrirRegistroAlimentacao('cafeManha')"><span>☕</span><strong>Café da manhã</strong></button>
+      <button class="menu-card" onclick="abrirRegistroAlimentacao('almoco')"><span>🍛</span><strong>Almoço</strong></button>
+      <button class="menu-card" onclick="abrirRegistroAlimentacao('cafeTarde')"><span>☕</span><strong>Café da tarde</strong></button>
+      <button class="menu-card" onclick="abrirRegistroAlimentacao('jantar')"><span>🍽️</span><strong>Jantar</strong></button>
+      <button class="menu-card" onclick="abrirRegistroAlimentacao('ceia')"><span>🌙</span><strong>Ceia</strong></button>
+    </div>
+    <button class="saude" onclick="mostrarTela('alimentacao')">← Voltar para Alimentação</button>
+  </div>
+
+  <!-- REGISTRAR REFEIÇÃO -->
+  <div id="alimentacaoRegistrar" class="tela">
+    <h2 id="tituloRegistroAlimentacao">🍽️ Registrar refeição</h2>
+
+    <div class="card">
+      <h3 id="tituloSugestaoAlimentacao">Alimentos consumidos</h3>
+      <div id="listaSugestaoAlimentacao"></div>
+      <p class="texto-estimativa">Marque apenas o que você realmente comeu.</p>
+    </div>
+
+    <div class="card">
+      <h3>➕ Comi algo diferente</h3>
+      <label>Nome do alimento:</label>
+      <input type="text" id="alimentoExtraNome" placeholder="Ex: Ovo">
+      <br><br>
+      <label>Quantidade:</label>
+      <input type="number" id="alimentoExtraQuantidade" min="0" step="0.1" placeholder="Ex: 2">
+      <br><br>
+      <label>Unidade:</label>
+      <select id="alimentoExtraUnidade">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidade">unidade</option>
+        <option value="fatia">fatia</option>
+        <option value="colher">colher</option>
+        <option value="concha">concha</option>
+        <option value="copo">copo</option>
+      </select>
+      <br><br>
+      <button onclick="adicionarAlimentoExtra()">Adicionar alimento</button>
+      <div id="listaAlimentosExtras" class="lista-alimentos-extras"></div>
+    </div>
+
+    <div class="card">
+      <div id="caloriasRefeicao" class="calorias-refeicao">🔥 Calorias estimadas da refeição: —</div>
+      <p class="texto-estimativa">Valor aproximado, calculado com base nos alimentos marcados e adicionados.</p>
+      <button onclick="calcularCaloriasRefeicao()">Calcular calorias</button>
+      <br><br>
+      <button onclick="salvarRefeicao()">💾 Salvar refeição</button>
+    </div>
+
+    <button class="saude" onclick="mostrarTela('alimentacao')">← Voltar para Alimentação</button>
+  </div>
+
+  <!-- REGISTRAR EXTRA -->
+  <div id="alimentacaoExtra" class="tela">
+    <h2>🍫 Registrar extra</h2>
+    <div class="card">
+      <h3>🍫 O que você consumiu?</h3>
+      <label>Nome do alimento:</label>
+      <input type="text" id="extraNome" placeholder="Ex: Chocolate" oninput="calcularCaloriasExtra()">
+      <br><br>
+      <label>Quantidade:</label>
+      <input type="number" id="extraQuantidade" min="0" step="0.1" placeholder="Ex: 30" oninput="calcularCaloriasExtra()">
+      <br><br>
+      <label>Unidade:</label>
+      <select id="extraUnidade" onchange="calcularCaloriasExtra()">
+        <option value="g">g</option>
+        <option value="ml">ml</option>
+        <option value="unidade">unidade</option>
+        <option value="fatia">fatia</option>
+        <option value="colher">colher</option>
+        <option value="concha">concha</option>
+        <option value="copo">copo</option>
+      </select>
+      <br><br>
+      <div id="caloriasExtra" class="calorias-refeicao">🔥 Calorias estimadas: —</div>
+      <p class="texto-estimativa">Valor aproximado, calculado com base na alimentação informada.</p>
+      <button onclick="salvarExtraAlimentacao()">💾 Registrar extra</button>
+    </div>
+    <button class="saude" onclick="mostrarTela('alimentacao')">← Voltar para Alimentação</button>
+  </div>
+
+  <!-- CALORIAS DO DIA -->
+  <div id="alimentacaoCaloriasDia" class="tela">
+    <h2>🔥 Calorias do dia</h2>
+    <div class="card">
+      <div id="resumoCaloriasDia"></div>
+      <div class="progresso-container">
+        <div id="barraCaloriasDia" class="progresso-barra"></div>
+      </div>
+      <p id="textoProgressoCalorias" class="progresso-texto"></p>
+    </div>
+    <button class="saude" onclick="mostrarTela('alimentacao')">← Voltar para Alimentação</button>
   </div>
 
   <!-- CARDIO -->

@@ -2573,6 +2573,1191 @@ function fecharDetalhesTreino() {
   detalhes.innerHTML = "";
 
 }
+
+
+// ==========================================
+// ALIMENTAÇÃO
+// ==========================================
+
+let metaCaloriasDiaria =
+  2000;
+
+
+let refeicaoAtualAlimentacao =
+  null;
+
+
+let alimentosExtrasAlimentacao =
+  [];
+
+
+let caloriasRefeicaoAtual =
+  0;
+
+
+let sugestaoAtualAtiva =
+  false;
+
+
+let historicoAlimentacao =
+  JSON.parse(
+    localStorage.getItem("historicoAlimentacao")
+  ) || {};
+
+
+let historicoExtrasAlimentacao =
+  JSON.parse(
+    localStorage.getItem("historicoExtrasAlimentacao")
+  ) || {};
+
+
+let tiposRefeicaoAlimentacao = {
+
+  cafeManha: {
+    nome: "Café da manhã",
+    icone: "☕"
+  },
+
+  almoco: {
+    nome: "Almoço",
+    icone: "🍛"
+  },
+
+  cafeTarde: {
+    nome: "Café da tarde",
+    icone: "☕"
+  },
+
+  jantar: {
+    nome: "Jantar",
+    icone: "🍽️"
+  },
+
+  ceia: {
+    nome: "Ceia",
+    icone: "🌙"
+  }
+
+};
+
+
+let sugestoesAlimentacao = {
+
+  cafeManha: [
+    { nome: "Pão integral", quantidade: 2, unidade: "fatia" },
+    { nome: "Ovo", quantidade: 2, unidade: "unidade" },
+    { nome: "Banana", quantidade: 1, unidade: "unidade" },
+    { nome: "Leite", quantidade: 200, unidade: "ml" }
+  ],
+
+  almoco: [
+    { nome: "Arroz", quantidade: 100, unidade: "g" },
+    { nome: "Feijão", quantidade: 100, unidade: "g" },
+    { nome: "Frango grelhado", quantidade: 120, unidade: "g" },
+    { nome: "Salada", quantidade: 80, unidade: "g" },
+    { nome: "Batata cozida", quantidade: 100, unidade: "g" }
+  ],
+
+  cafeTarde: [
+    { nome: "Iogurte natural", quantidade: 170, unidade: "g" },
+    { nome: "Aveia", quantidade: 2, unidade: "colher" },
+    { nome: "Maçã", quantidade: 1, unidade: "unidade" }
+  ],
+
+  jantar: [
+    { nome: "Arroz", quantidade: 80, unidade: "g" },
+    { nome: "Peixe grelhado", quantidade: 120, unidade: "g" },
+    { nome: "Legumes cozidos", quantidade: 120, unidade: "g" },
+    { nome: "Salada", quantidade: 80, unidade: "g" }
+  ],
+
+  ceia: [
+    { nome: "Leite", quantidade: 200, unidade: "ml" },
+    { nome: "Castanhas", quantidade: 20, unidade: "g" },
+    { nome: "Banana", quantidade: 1, unidade: "unidade" }
+  ]
+
+};
+
+
+let baseCaloriasAlimentos = {
+
+  arroz: { g: 1.3, colher: 39 },
+  feijao: { g: 0.77, concha: 115 },
+  "frango grelhado": { g: 1.65 },
+  salada: { g: 0.2 },
+  "batata cozida": { g: 0.86 },
+  "pao integral": { fatia: 70, g: 2.5 },
+  ovo: { unidade: 78, g: 1.55 },
+  banana: { unidade: 90, g: 0.89 },
+  leite: { ml: 0.61, copo: 122 },
+  "iogurte natural": { g: 0.63, copo: 110 },
+  aveia: { colher: 55, g: 3.8 },
+  maca: { unidade: 80, g: 0.52 },
+  "peixe grelhado": { g: 1.3 },
+  "legumes cozidos": { g: 0.45 },
+  castanhas: { g: 6.0 },
+  "carne bovina": { g: 2.5 },
+  chocolate: { g: 5.4, unidade: 120 },
+  cafe: { ml: 0.02, copo: 5 },
+  biscoito: { g: 4.5, unidade: 45 },
+  refrigerante: { ml: 0.42, copo: 84 }
+
+};
+
+
+let caloriasPadraoPorUnidade = {
+
+  g: 1.2,
+  ml: 0.6,
+  unidade: 80,
+  fatia: 70,
+  colher: 35,
+  concha: 90,
+  copo: 120
+
+};
+
+
+function normalizarNomeAlimento(nome) {
+
+  return nome
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+}
+
+
+function escaparTexto(texto) {
+
+  return String(texto)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function obterDataHojeAlimentacao() {
+
+  return new Date().toLocaleDateString(
+    "pt-BR"
+  );
+
+}
+
+
+function formatarQuantidadeAlimento(alimento) {
+
+  let unidade =
+    alimento.unidade;
+
+
+  if (
+    unidade === "unidade" &&
+    Number(alimento.quantidade) !== 1
+  ) {
+
+    unidade =
+      "unidades";
+
+  }
+
+
+  return alimento.quantidade +
+    " " +
+    unidade;
+
+}
+
+
+function calcularCaloriasAlimento(alimento) {
+
+  let nomeNormalizado =
+    normalizarNomeAlimento(
+      alimento.nome
+    );
+
+
+  let quantidade =
+    Number(
+      alimento.quantidade
+    ) || 0;
+
+
+  if (quantidade <= 0) {
+
+    return 0;
+
+  }
+
+
+  let alimentoBase =
+    baseCaloriasAlimentos[
+      nomeNormalizado
+    ];
+
+
+  if (
+    alimentoBase &&
+    alimentoBase[alimento.unidade] !== undefined
+  ) {
+
+    return Math.round(
+      quantidade *
+      alimentoBase[alimento.unidade]
+    );
+
+  }
+
+
+  let valorPadrao =
+    caloriasPadraoPorUnidade[
+      alimento.unidade
+    ] || 80;
+
+
+  return Math.round(
+    quantidade *
+    valorPadrao
+  );
+
+}
+
+
+function obterAlimentosMarcadosSugestao() {
+
+  let marcados =
+    document.querySelectorAll(
+      ".alimento-sugestao:checked"
+    );
+
+
+  let sugestao =
+    sugestoesAlimentacao[
+      refeicaoAtualAlimentacao
+    ] || [];
+
+
+  let alimentos = [];
+
+
+  marcados.forEach(
+    function(item) {
+
+      let indice =
+        Number(
+          item.dataset.indice
+        );
+
+
+      if (sugestao[indice]) {
+
+        alimentos.push(
+          sugestao[indice]
+        );
+
+      }
+
+    }
+  );
+
+
+  return alimentos;
+
+}
+
+
+function abrirSugestaoAlimentacao(tipoRefeicao) {
+
+  iniciarRegistroAlimentacao(
+    tipoRefeicao,
+    true
+  );
+
+}
+
+
+function abrirRegistroAlimentacao(tipoRefeicao) {
+
+  iniciarRegistroAlimentacao(
+    tipoRefeicao,
+    false
+  );
+
+}
+
+
+function iniciarRegistroAlimentacao(
+  tipoRefeicao,
+  usarSugestao
+) {
+
+  let dadosRefeicao =
+    tiposRefeicaoAlimentacao[
+      tipoRefeicao
+    ];
+
+
+  if (!dadosRefeicao) return;
+
+
+  refeicaoAtualAlimentacao =
+    tipoRefeicao;
+
+  sugestaoAtualAtiva =
+    usarSugestao;
+
+  alimentosExtrasAlimentacao =
+    [];
+
+  caloriasRefeicaoAtual =
+    0;
+
+
+  let tituloRegistro =
+    document.getElementById(
+      "tituloRegistroAlimentacao"
+    );
+
+  let tituloSugestao =
+    document.getElementById(
+      "tituloSugestaoAlimentacao"
+    );
+
+  let listaSugestao =
+    document.getElementById(
+      "listaSugestaoAlimentacao"
+    );
+
+  let calorias =
+    document.getElementById(
+      "caloriasRefeicao"
+    );
+
+
+  if (tituloRegistro) {
+
+    tituloRegistro.innerText =
+      dadosRefeicao.icone +
+      " " +
+      dadosRefeicao.nome;
+
+  }
+
+
+  if (tituloSugestao) {
+
+    tituloSugestao.innerText =
+      usarSugestao
+        ? "Sugestão alimentar"
+        : "Alimentos consumidos";
+
+  }
+
+
+  if (listaSugestao) {
+
+    if (usarSugestao) {
+
+      let sugestao =
+        sugestoesAlimentacao[
+          tipoRefeicao
+        ] || [];
+
+
+      listaSugestao.innerHTML =
+        sugestao
+          .map(function(alimento, indice) {
+
+            return `
+
+              <div class="alimento-opcao">
+
+                <input
+                  type="checkbox"
+                  class="alimento-sugestao"
+                  id="alimentoSugestao${indice}"
+                  data-indice="${indice}"
+                  onchange="calcularCaloriasRefeicao()">
+
+                <label for="alimentoSugestao${indice}">
+                  ${escaparTexto(alimento.nome)}
+                  —
+                  ${escaparTexto(formatarQuantidadeAlimento(alimento))}
+                </label>
+
+              </div>
+
+            `;
+
+          })
+          .join("");
+
+    }
+
+    else {
+
+      listaSugestao.innerHTML =
+        "<p>Adicione abaixo os alimentos que você consumiu nesta refeição.</p>";
+
+    }
+
+  }
+
+
+  if (calorias) {
+
+    calorias.innerText =
+      "🔥 Calorias estimadas da refeição: —";
+
+  }
+
+
+  atualizarListaAlimentosExtras();
+
+  mostrarTela(
+    "alimentacaoRegistrar"
+  );
+
+}
+
+
+function adicionarAlimentoExtra() {
+
+  let campoNome =
+    document.getElementById(
+      "alimentoExtraNome"
+    );
+
+  let campoQuantidade =
+    document.getElementById(
+      "alimentoExtraQuantidade"
+    );
+
+  let campoUnidade =
+    document.getElementById(
+      "alimentoExtraUnidade"
+    );
+
+
+  if (
+    !campoNome ||
+    !campoQuantidade ||
+    !campoUnidade
+  ) {
+
+    return;
+
+  }
+
+
+  let nome =
+    campoNome.value.trim();
+
+  let quantidade =
+    Number(
+      campoQuantidade.value
+    );
+
+  let unidade =
+    campoUnidade.value;
+
+
+  if (nome === "") {
+
+    alert(
+      "Informe o nome do alimento!"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !quantidade ||
+    quantidade <= 0
+  ) {
+
+    alert(
+      "Informe a quantidade consumida!"
+    );
+
+    return;
+
+  }
+
+
+  alimentosExtrasAlimentacao.push({
+
+    nome: nome,
+    quantidade: quantidade,
+    unidade: unidade
+
+  });
+
+
+  campoNome.value = "";
+  campoQuantidade.value = "";
+  campoUnidade.value = "g";
+
+  atualizarListaAlimentosExtras();
+  calcularCaloriasRefeicao();
+
+}
+
+
+function atualizarListaAlimentosExtras() {
+
+  let lista =
+    document.getElementById(
+      "listaAlimentosExtras"
+    );
+
+
+  if (!lista) return;
+
+
+  if (
+    alimentosExtrasAlimentacao.length === 0
+  ) {
+
+    lista.innerHTML = "";
+
+    return;
+
+  }
+
+
+  lista.innerHTML =
+    alimentosExtrasAlimentacao
+      .map(function(alimento) {
+
+        return `
+
+          <div class="alimento-extra-item">
+
+            <span>
+              ${escaparTexto(alimento.nome)}
+              —
+              ${escaparTexto(formatarQuantidadeAlimento(alimento))}
+            </span>
+
+            <strong>
+              ${calcularCaloriasAlimento(alimento)}
+              kcal
+            </strong>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+}
+
+
+function calcularCaloriasRefeicao() {
+
+  let alimentos =
+    obterAlimentosMarcadosSugestao()
+      .concat(
+        alimentosExtrasAlimentacao
+      );
+
+
+  let total =
+    alimentos.reduce(
+      function(soma, alimento) {
+
+        return soma +
+          calcularCaloriasAlimento(
+            alimento
+          );
+
+      },
+      0
+    );
+
+
+  caloriasRefeicaoAtual =
+    total;
+
+
+  let calorias =
+    document.getElementById(
+      "caloriasRefeicao"
+    );
+
+
+  if (calorias) {
+
+    calorias.innerText =
+      "🔥 Calorias estimadas da refeição: " +
+      total +
+      " kcal";
+
+  }
+
+
+  return {
+    alimentos: alimentos,
+    calorias: total
+  };
+
+}
+
+
+function salvarRefeicao() {
+
+  if (!refeicaoAtualAlimentacao) {
+
+    alert(
+      "Escolha uma refeição primeiro!"
+    );
+
+    return;
+
+  }
+
+
+  let resultado =
+    calcularCaloriasRefeicao();
+
+
+  if (
+    resultado.alimentos.length === 0
+  ) {
+
+    alert(
+      "Marque ou adicione pelo menos um alimento!"
+    );
+
+    return;
+
+  }
+
+
+  let data =
+    obterDataHojeAlimentacao();
+
+
+  if (!historicoAlimentacao[data]) {
+
+    historicoAlimentacao[data] = [];
+
+  }
+
+
+  let dadosRefeicao =
+    tiposRefeicaoAlimentacao[
+      refeicaoAtualAlimentacao
+    ];
+
+
+  historicoAlimentacao[data].push({
+
+    data: data,
+    tipo: refeicaoAtualAlimentacao,
+    nome: dadosRefeicao.nome,
+    alimentos: resultado.alimentos,
+    calorias: resultado.calorias,
+    origem: sugestaoAtualAtiva
+      ? "sugestao"
+      : "manual"
+
+  });
+
+
+  localStorage.setItem(
+    "historicoAlimentacao",
+    JSON.stringify(
+      historicoAlimentacao
+    )
+  );
+
+
+  alert(
+    "Refeição salva com sucesso!"
+  );
+
+
+  abrirCaloriasDoDia();
+
+}
+
+
+function abrirCaloriasDoDia() {
+
+  atualizarResumoCaloriasDia();
+
+  mostrarTela(
+    "alimentacaoCaloriasDia"
+  );
+
+}
+
+
+function abrirRegistroExtra() {
+
+  let campoNome =
+    document.getElementById(
+      "extraNome"
+    );
+
+  let campoQuantidade =
+    document.getElementById(
+      "extraQuantidade"
+    );
+
+  let campoUnidade =
+    document.getElementById(
+      "extraUnidade"
+    );
+
+  let calorias =
+    document.getElementById(
+      "caloriasExtra"
+    );
+
+
+  if (campoNome) {
+
+    campoNome.value = "";
+
+  }
+
+
+  if (campoQuantidade) {
+
+    campoQuantidade.value = "";
+
+  }
+
+
+  if (campoUnidade) {
+
+    campoUnidade.value = "g";
+
+  }
+
+
+  if (calorias) {
+
+    calorias.innerText =
+      "🔥 Calorias estimadas: —";
+
+  }
+
+
+  mostrarTela(
+    "alimentacaoExtra"
+  );
+
+}
+
+
+function obterDadosExtraAlimentacao() {
+
+  let campoNome =
+    document.getElementById(
+      "extraNome"
+    );
+
+  let campoQuantidade =
+    document.getElementById(
+      "extraQuantidade"
+    );
+
+  let campoUnidade =
+    document.getElementById(
+      "extraUnidade"
+    );
+
+
+  if (
+    !campoNome ||
+    !campoQuantidade ||
+    !campoUnidade
+  ) {
+
+    return null;
+
+  }
+
+
+  return {
+
+    nome: campoNome.value.trim(),
+    quantidade: Number(
+      campoQuantidade.value
+    ),
+    unidade: campoUnidade.value
+
+  };
+
+}
+
+
+function calcularCaloriasExtra() {
+
+  let extra =
+    obterDadosExtraAlimentacao();
+
+  let calorias =
+    document.getElementById(
+      "caloriasExtra"
+    );
+
+
+  if (!extra) return 0;
+
+
+  if (
+    extra.nome === "" ||
+    !extra.quantidade ||
+    extra.quantidade <= 0
+  ) {
+
+    if (calorias) {
+
+      calorias.innerText =
+        "🔥 Calorias estimadas: —";
+
+    }
+
+    return 0;
+
+  }
+
+
+  let total =
+    calcularCaloriasAlimento(
+      extra
+    );
+
+
+  if (calorias) {
+
+    calorias.innerText =
+      "🔥 Calorias estimadas: " +
+      total +
+      " kcal";
+
+  }
+
+
+  return total;
+
+}
+
+
+function salvarExtraAlimentacao() {
+
+  let extra =
+    obterDadosExtraAlimentacao();
+
+
+  if (!extra) return;
+
+
+  if (extra.nome === "") {
+
+    alert(
+      "Informe o alimento consumido!"
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !extra.quantidade ||
+    extra.quantidade <= 0
+  ) {
+
+    alert(
+      "Informe a quantidade consumida!"
+    );
+
+    return;
+
+  }
+
+
+  let calorias =
+    calcularCaloriasExtra();
+
+  let data =
+    obterDataHojeAlimentacao();
+
+
+  if (!historicoExtrasAlimentacao[data]) {
+
+    historicoExtrasAlimentacao[data] = [];
+
+  }
+
+
+  historicoExtrasAlimentacao[data].push({
+
+    data: data,
+    tipo: "extra",
+    nome: extra.nome,
+    quantidade: extra.quantidade,
+    unidade: extra.unidade,
+    calorias: calorias
+
+  });
+
+
+  localStorage.setItem(
+    "historicoExtrasAlimentacao",
+    JSON.stringify(
+      historicoExtrasAlimentacao
+    )
+  );
+
+
+  alert(
+    "Extra registrado com sucesso!"
+  );
+
+
+  abrirCaloriasDoDia();
+
+}
+
+
+function atualizarResumoCaloriasDia() {
+
+  let resumo =
+    document.getElementById(
+      "resumoCaloriasDia"
+    );
+
+  let barra =
+    document.getElementById(
+      "barraCaloriasDia"
+    );
+
+  let textoProgresso =
+    document.getElementById(
+      "textoProgressoCalorias"
+    );
+
+
+  if (!resumo) return;
+
+
+  let data =
+    obterDataHojeAlimentacao();
+
+  let registrosDoDia =
+    historicoAlimentacao[data] || [];
+
+  let extrasDoDia =
+    historicoExtrasAlimentacao[data] || [];
+
+  let totalRefeicoes = 0;
+
+  let totalExtras = 0;
+
+  let totalConsumido = 0;
+
+  let linhas = "";
+
+  let linhasExtras = "";
+
+
+  Object.keys(
+    tiposRefeicaoAlimentacao
+  ).forEach(function(tipo) {
+
+    let dadosRefeicao =
+      tiposRefeicaoAlimentacao[
+        tipo
+      ];
+
+    let totalRefeicao = 0;
+
+
+    registrosDoDia.forEach(
+      function(registro) {
+
+        if (registro.tipo === tipo) {
+
+          totalRefeicao +=
+            Number(
+              registro.calorias
+            ) || 0;
+
+        }
+
+      }
+    );
+
+
+    totalRefeicoes +=
+      totalRefeicao;
+
+
+    linhas += `
+
+      <p>
+        ${dadosRefeicao.icone}
+        <strong>
+          ${dadosRefeicao.nome}
+        </strong>
+        —
+        ${
+          totalRefeicao > 0
+            ? totalRefeicao + " kcal"
+            : "não registrado"
+        }
+      </p>
+
+    `;
+
+  });
+
+
+  extrasDoDia.forEach(
+    function(extra) {
+
+      let caloriasExtra =
+        Number(
+          extra.calorias
+        ) || 0;
+
+
+      totalExtras +=
+        caloriasExtra;
+
+
+      linhasExtras += `
+
+        <p>
+          🍫 <strong>Extra:</strong>
+          ${escaparTexto(extra.nome)}
+          —
+          ${caloriasExtra}
+          kcal
+        </p>
+
+      `;
+
+    }
+  );
+
+
+  if (linhasExtras === "") {
+
+    linhasExtras = `
+
+      <p>
+        🍫 <strong>Extras</strong>
+        —
+        não registrado
+      </p>
+
+    `;
+
+  }
+
+
+  totalConsumido =
+    totalRefeicoes +
+    totalExtras;
+
+
+  let restante =
+    metaCaloriasDiaria -
+    totalConsumido;
+
+  let progresso =
+    (
+      totalConsumido /
+      metaCaloriasDiaria
+    ) * 100;
+
+
+  if (progresso > 100) {
+
+    progresso = 100;
+
+  }
+
+
+  resumo.innerHTML = `
+
+    <p>
+      📅 <strong>Hoje</strong>
+    </p>
+
+    ${linhas}
+
+    ${linhasExtras}
+
+    <hr>
+
+    <p>
+      🍽️ <strong>Calorias das refeições:</strong>
+      ${totalRefeicoes.toLocaleString("pt-BR")}
+      kcal
+    </p>
+
+    <p>
+      🍫 <strong>Calorias dos extras:</strong>
+      ${totalExtras.toLocaleString("pt-BR")}
+      kcal
+    </p>
+
+    <p>
+      🔥 <strong>Total consumido:</strong>
+      ${totalConsumido.toLocaleString("pt-BR")}
+      kcal
+    </p>
+
+    <p>
+      🎯 <strong>Meta diária:</strong>
+      ${metaCaloriasDiaria.toLocaleString("pt-BR")}
+      kcal
+    </p>
+
+    <p>
+      🔥 <strong>Restante:</strong>
+      ${Math.max(restante, 0).toLocaleString("pt-BR")}
+      kcal
+    </p>
+
+  `;
+
+
+  if (barra) {
+
+    barra.style.width =
+      progresso + "%";
+
+  }
+
+
+  if (textoProgresso) {
+
+    textoProgresso.innerText =
+      progresso.toFixed(0) +
+      "% da meta diária";
+
+  }
+
+}
 // ==========================================
 // CÁLCULO AUTOMÁTICO DE CALORIAS DO CARDIO
 // ==========================================
@@ -3246,6 +4431,7 @@ document.addEventListener(
 
     atualizarEvolucao();
 mostrarHistoricoCardio();
+atualizarResumoCaloriasDia();
 
 if (usuarioNome.trim() === "") {
 
