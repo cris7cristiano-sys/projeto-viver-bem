@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projeto Viver Bem</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.min.js"></script>
+
+<div class="app">
+
+  <!-- PRIMEIRO ACESSO -->
+  <div id="primeiroAcesso" class="tela tela-primeiro-acesso">
+    <header>
+      <h1>🧬 Projeto Viver Bem</h1>
+      <p>Bem-vindo ao seu espaço de acompanhamento diário.</p>
+    </header>
+
+    <div class="card">
+      <h3>Como devemos chamar você?</h3>
+      <input type="text" id="nomeUsuario" placeholder="Digite seu nome">
+      <br><br>
+      <button onclick="continuarPrimeiroAcesso()">Continuar</button>
+    </div>
+  </div>
+
+  <!-- TELA INICIAL -->
+  <div id="inicio" class="tela tela-inicial">
+
+    <header>
+      <h1>🧬 Projeto Viver Bem</h1>
+      <p id="saudacaoUsuario">Olá! 👋</p>
+    </header>
+
+    <div class="card peso-card">
+      <h2>⚖️ Peso</h2>
+      <p id="pesoAtual">96 kg</p>
+      <span>Meta: 90 kg</span>
+    </div>
+
+    <div class="card">
+      <h3>⚖️ Registrar peso</h3>
+      <input type="number" id="peso" step="0.1" placeholder="Digite seu peso">
+      <br><br>
+      <button onclick="registrarPeso()">Salvar peso</button>
+    </div>
+
+    <div class="menu">
+      <button class="menu-card" onclick="mostrarTela('treino')"><span>🏋️</span><strong>Treino</strong></button>
+      <button class="menu-card" onclick="mostrarTela('sono')"><span>😴</span><strong>Sono</strong></button>
+      <button class="menu-card" onclick="mostrarTela('alimentacao')"><span>🥗</span><strong>Alimentação</strong></button>
+      <button class="menu-card" onclick="mostrarTela('cardio')"><span>🚶</span><strong>Cardio</strong></button>
+      <button class="menu-card" onclick="mostrarTela('metas')"><span>🎯</span><strong>Metas</strong></button>
+    </div>
+
+    <button class="saude" onclick="mostrarTela('saude')">❤️ Saúde</button>
+  </div>
+
+  <!-- TREINO -->
+  <div id="treino" class="tela">
+    <h2>🏋️ Treino</h2>
+    <div class="card">
+      <h3>Registrar treino</h3>
+      <label>Exercício:</label><br><br>
+      <select id="exercicio"></select><br><br>
+      <label>Carga utilizada (kg):</label><br>
+      <input type="number" id="cargaTreino" min="0" step="0.5" placeholder="Ex: 10"><br><br>
+      <label>Série 1:</label><input type="number" id="serie1"><br><br>
+      <label>Série 2:</label><input type="number" id="serie2"><br><br>
+      <label>Série 3:</label><input type="number" id="serie3"><br><br>
+      <button onclick="registrarTreino()">Salvar treino</button>
+    </div>
+    <div class="card">
+      <h3>📊 Histórico de treinos</h3>
+      <table id="historicoTreino"><tr><th>Data</th><th>Exercício</th><th>Carga</th><th>S1</th><th>S2</th><th>S3</th></tr></table>
+    </div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- SONO -->
+  <div id="sono" class="tela">
+    <h2>😴 Sono</h2>
+    <div class="card">
+      <h3>Registrar sono</h3>
+      <label>🌙 Hora que dormiu:</label><input type="time" id="horaDormiu"><br><br>
+      <label>☀️ Hora que acordou:</label><input type="time" id="horaAcordou"><br><br>
+      <button onclick="registrarSono()">Salvar sono</button>
+    </div>
+    <div class="card">
+      <h3>📊 Histórico de sono</h3>
+      <table id="historicoSono"><tr><th>Data</th><th>Tempo de sono</th></tr></table>
+    </div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- ALIMENTAÇÃO -->
+  <div id="alimentacao" class="tela">
+    <h2>🥗 Alimentação</h2>
+    <div class="card" style="text-align:center;">
+      <div style="font-size:60px; margin:20px 0;">🚧</div>
+      <h3>Em processo de criação</h3>
+      <p>Estamos preparando uma nova forma de registrar e acompanhar sua alimentação.</p>
+      <p>Em breve você poderá até <strong>fotografar seu prato</strong> 📸 e receber uma estimativa dos alimentos e calorias.</p>
+      <p style="font-size:14px; color:#68756e;">Esta função estará disponível em breve.</p>
+    </div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- CARDIO -->
+  <div id="cardio" class="tela">
+    <h2>🚶 Cardio</h2>
+    <div class="card">
+      <h3>➕ Registrar cardio</h3>
+      <label>Atividade:</label>
+      <select id="tipoCardio" onchange="calcularCaloriasCardio()">
+        <option value="Caminhada">🚶 Caminhada</option>
+        <option value="Corrida">🏃 Corrida</option>
+        <option value="Bicicleta">🚴 Bicicleta</option>
+        <option value="Elíptico">🏋️ Elíptico</option>
+        <option value="Outro">➕ Outro</option>
+      </select><br><br>
+      <label>⏱️ Tempo (minutos):</label>
+      <input type="number" id="tempoCardio" min="1" placeholder="Ex: 30" oninput="calcularCaloriasCardio()"><br><br>
+      <label>📏 Distância (km):</label>
+      <input type="number" id="distanciaCardio" min="0" step="0.1" placeholder="Ex: 3.5" oninput="calcularCaloriasCardio()"><br><br>
+      <div id="caloriasEstimadasCardio" style="margin-top:15px;font-weight:bold;font-size:18px;">🔥 Calorias estimadas: —</div><br><br>
+      <button onclick="registrarCardio()">💾 Salvar cardio</button>
+    </div>
+    <div class="card">
+      <h3>📊 Histórico de cardio</h3>
+      <table id="historicoCardio"><tr><th>Data</th><th>Atividade</th><th>Tempo</th><th>Distância</th><th>Calorias</th></tr></table>
+    </div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- METAS -->
+  <div id="metas" class="tela">
+    <h2>🎯 Minhas Metas</h2>
+    <div class="card">
+      <h3>➕ Nova meta</h3>
+      <label>Exercício:</label>
+      <input type="text" id="nomeExercicio" placeholder="Ex: Rosca direta"><br><br>
+      <label>Tipo de meta:</label>
+      <select id="tipoMeta"><option value="repeticoes">Repetições</option><option value="peso">Peso (kg)</option></select><br><br>
+      <label>Valor da meta:</label>
+      <input type="number" id="valorMeta" min="1" step="0.1" placeholder="Ex: 10"><br><br>
+      <button onclick="salvarMetaTreino()">🎯 Salvar meta</button>
+    </div>
+    <div class="card"><h3>📊 Minhas metas</h3><div id="listaMetas">Nenhuma meta cadastrada.</div></div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- EVOLUÇÃO -->
+  <div id="evolucao" class="tela">
+    <h2>📊 Minha Evolução</h2>
+    <p>Escolha o que deseja acompanhar:</p>
+    <div class="menu">
+      <button class="menu-card" onclick="mostrarTela('evolucaoPeso')"><span>⚖️</span><strong>Peso</strong></button>
+      <button class="menu-card" onclick="mostrarTela('evolucaoTreino')"><span>🏋️</span><strong>Treinos</strong></button>
+      <button class="menu-card" onclick="mostrarTela('evolucaoSono')"><span>😴</span><strong>Sono</strong></button>
+      <button class="menu-card" onclick="mostrarTela('evolucaoCardio')"><span>🚶</span><strong>Cardio</strong></button>
+    </div>
+    <br>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- EVOLUÇÃO DO PESO -->
+  <div id="evolucaoPeso" class="tela">
+    <h2>⚖️ Evolução do Peso</h2>
+    <div class="card">
+      <div id="resumoPeso">Ainda não há dados de peso.</div>
+      <div class="grafico-peso"><canvas id="graficoPeso"></canvas></div>
+    </div>
+    <button class="saude" onclick="mostrarTela('evolucao')">← Voltar para Evolução</button>
+  </div>
+
+  <!-- EVOLUÇÃO DOS TREINOS -->
+  <div id="evolucaoTreino" class="tela">
+    <h2>🏋️ Evolução dos Treinos</h2>
+    <div class="card">
+      <div id="resumoTreino">Ainda não há dados de treino.</div>
+      <div id="detalhesTreino"></div>
+    </div>
+    <button class="saude" onclick="mostrarTela('evolucao')">← Voltar para Evolução</button>
+  </div>
+
+  <!-- EVOLUÇÃO DO SONO -->
+  <div id="evolucaoSono" class="tela">
+    <h2>😴 Evolução do Sono</h2>
+    <div class="card">
+      <div id="resumoSono">Ainda não há dados de sono.</div>
+    </div>
+    <button class="saude" onclick="mostrarTela('evolucao')">← Voltar para Evolução</button>
+  </div>
+
+  <!-- EVOLUÇÃO DO CARDIO -->
+  <div id="evolucaoCardio" class="tela">
+    <h2>🚶 Evolução do Cardio</h2>
+    <div class="card">
+      <div id="resumoCardio">Ainda não há dados de cardio.</div>
+    </div>
+    <button class="saude" onclick="mostrarTela('evolucao')">← Voltar para Evolução</button>
+  </div>
+
+  <!-- SAÚDE -->
+  <div id="saude" class="tela">
+    <h2>❤️ Saúde</h2>
+    <div class="card"><p>Aqui ficarão seus indicadores de saúde.</p></div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+  <!-- MAIS -->
+  <div id="mais" class="tela">
+    <h2>⚙️ Mais</h2>
+    <div class="card"><p>Configurações e outras funções ficarão aqui.</p></div>
+    <button class="saude" onclick="voltarInicio()">← Voltar para início</button>
+  </div>
+
+</div>
+
+<!-- MENU INFERIOR FIXO -->
+<nav class="bottom-nav">
+  <button onclick="voltarInicio()"><span>🏠</span><small>Início</small></button>
+  <button onclick="mostrarTela('evolucao')"><span>📊</span><small>Evolução</small></button>
+  <button onclick="mostrarTela('metas')"><span>🎯</span><small>Metas</small></button>
+  <button onclick="mostrarTela('mais')"><span>⚙️</span><small>Mais</small></button>
+</nav>
+
+<script src="script.js"></script>
+</body>
+</html>

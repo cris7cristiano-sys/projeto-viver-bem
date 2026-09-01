@@ -1,0 +1,334 @@
+/* ==========================================
+   PROJETO VIVER BEM
+   CSS PRINCIPAL
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #eef3f0;
+  margin: 0;
+  padding: 20px;
+  padding-bottom: 90px;
+  color: #26332d;
+}
+
+.app {
+  max-width: 500px;
+  margin: auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+header p {
+  margin: 0;
+  font-size: 17px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.peso-card {
+  text-align: center;
+}
+
+.peso-card h2 {
+  margin-top: 0;
+}
+
+.peso-card p {
+  font-size: 38px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.peso-card span {
+  color: #68756e;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border: 1px solid #d5ddd8;
+  border-radius: 10px;
+  font-size: 16px;
+  background: white;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #68756e;
+}
+
+button {
+  font-family: inherit;
+}
+
+.card button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  background: #26332d;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.card button:hover {
+  opacity: 0.9;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.menu-card {
+  background: white;
+  border: none;
+  border-radius: 18px;
+  padding: 25px 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.menu-card span {
+  font-size: 32px;
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+}
+
+.saude {
+  width: 100%;
+  margin-top: 15px;
+  padding: 18px;
+  background: white;
+  border: none;
+  border-radius: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tela {
+  background: white;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 18px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 10px 6px;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+th {
+  font-weight: bold;
+}
+
+.treino-evolucao {
+  background: #f7f9f8;
+  padding: 15px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+}
+
+.treino-evolucao h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.treino-numeros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.treino-numeros div {
+  background: white;
+  padding: 10px 5px;
+  border-radius: 10px;
+}
+
+.treino-numeros span {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.treino-numeros strong {
+  display: block;
+  font-size: 17px;
+}
+
+.progresso-container {
+  width: 100%;
+  height: 12px;
+  background: #e5e5e5;
+  border-radius: 10px;
+  margin-top: 15px;
+  overflow: hidden;
+}
+
+.progresso-barra {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 10px;
+}
+
+.progresso-texto {
+  text-align: center;
+  font-size: 14px;
+  margin: 8px 0 !important;
+  font-weight: bold;
+}
+
+.grafico-peso {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin-top: 20px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.10);
+  z-index: 1000;
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 5px 15px;
+}
+
+.bottom-nav button span {
+  font-size: 22px;
+}
+
+.bottom-nav button small {
+  font-size: 12px;
+}
+
+.acoes-meta {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.acoes-meta button {
+  flex: 1;
+  height: 58px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-editar-meta,
+.btn-excluir-meta {
+  background: #e6f4e8;
+  color: #2e7d32;
+}
+
+.btn-editar-meta:hover,
+.btn-excluir-meta:hover {
+  background: #d5ecd8;
+}
+
+.btn-editar-sono {
+  width: auto !important;
+  padding: 8px 10px !important;
+  background: #e6f4e8 !important;
+  color: #2e7d32 !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 500px) {
+  body {
+    padding: 12px;
+    padding-bottom: 85px;
+  }
+
+  header h1 {
+    font-size: 24px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .menu {
+    gap: 10px;
+  }
+
+  .menu-card {
+    padding: 20px 8px;
+  }
+
+  .treino-numeros strong {
+    font-size: 15px;
+  }
+
+  .bottom-nav button {
+    padding: 5px 10px;
+  }
+}
